@@ -1,0 +1,50 @@
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Warehouse.API.Data.Entities;
+
+namespace Warehouse.API.Data;
+
+public class DataContext(DbContextOptions<DataContext> options) : IdentityDbContext<AppUser>(options)
+{
+   
+    public DbSet<Paper> Papers { get; set; }
+    public DbSet<Delivery> Deliveries { get; set; }
+    public DbSet<Department> Departments { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        base.OnConfiguring(optionsBuilder);
+        optionsBuilder.ConfigureWarnings(warnings => 
+            warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        var hasher = new PasswordHasher<AppUser>();
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<Department>()
+            .HasData(new Department { Id = 1, Name = "Администраторы" });
+        
+        var user = new AppUser
+            {
+                Id = "1", // Фиксированный Id
+                UserName = "admin@domain.ru",
+                NormalizedUserName = "ADMIN@DOMAIN.RU",
+                Email = "admin@domain.ru",
+                NormalizedEmail = "ADMIN@DOMAIN.RU",
+                EmailConfirmed = true,
+                PasswordHash = hasher.HashPassword(null, "admin123"),
+                SecurityStamp = "security-stamp-2", 
+                Firstname = "Admin",
+                Lastname = "Admin",
+                AvatarImageUrl = "https://example.com/avatar2.jpg",
+                DepartmentId = 1,
+                RefreshToken = "refresh-token-2",
+                RefreshTokenExpiry = new DateTimeOffset(2035, 10, 10, 0, 0, 0, TimeSpan.Zero) 
+            };    
+        modelBuilder.Entity<AppUser>().HasData(user);
+    }
+}
