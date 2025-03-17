@@ -26,7 +26,10 @@ public class DataContext(DbContextOptions<DataContext> options) : IdentityDbCont
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.Entity<Department>()
-            .HasData(new Department { Id = 1, Name = "Администраторы" });
+            .HasData(new Department { Id = 1, Name = "ИТ" });
+        
+        modelBuilder.Entity<IdentityRole>()
+            .HasData(new IdentityRole { Id = "1", Name = "Admin", NormalizedName = "ADMIN" });
         
         var user = new AppUser
             {
@@ -46,5 +49,13 @@ public class DataContext(DbContextOptions<DataContext> options) : IdentityDbCont
                 RefreshTokenExpiry = new DateTimeOffset(2035, 10, 10, 0, 0, 0, TimeSpan.Zero) 
             };    
         modelBuilder.Entity<AppUser>().HasData(user);
+        
+        modelBuilder.Entity<IdentityUserRole<string>>().HasData(
+            new IdentityUserRole<string>
+            {
+                RoleId = "1", 
+                UserId = "1"  
+            }
+        );
     }
 }

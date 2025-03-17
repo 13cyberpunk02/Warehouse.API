@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Warehouse.API.Data;
 using Warehouse.API.Data.Entities;
 using Warehouse.API.Data.Models.DTO_s.Requests.Account;
 using Warehouse.API.Data.Models.DTO_s.Responses.Account;
@@ -12,6 +13,7 @@ using Warehouse.API.Services.Interfaces;
 namespace Warehouse.API.Services.Implementations;
 
 public class AccountService(
+    DataContext context,
     UserManager<AppUser> userManager,
     RoleManager<IdentityRole> roleManager,
     UpdateAccountRequestValidator updateAccountRequestValidator,
@@ -20,18 +22,21 @@ public class AccountService(
 {
     public async Task<Result> GetAllAccountsAsync()
     {
-        var users = await userManager.Users.ToListAsync();
+        var users = await context.Users
+            .Include(u => u.Department)
+            .ToListAsync();
         if(users.Count == 0)
             return Result.Failure(AccountErrors.EmptyUsersListError);
-        
-        var response = users.Select(x => new UsersResponse(
-            Id: x.Id,
-            Email: x.Email,
-            Fullname: x.Fullname,
-            AvatarImageUrl: x.AvatarImageUrl,
-            DepartmentId: x.DepartmentId,
-            Department: x.Department.Name
+
+        var response = users.Select(user => new UsersResponse(
+            Id : user.Id,
+            Email : user.Email,
+            Fullname : user.Fullname,
+            AvatarImageUrl : user.AvatarImageUrl,
+            DepartmentId : user.DepartmentId,
+            Department : user.Department.Name
         ));
+
         return Result.Success(response);
     }
 
@@ -40,37 +45,43 @@ public class AccountService(
         if (string.IsNullOrEmpty(id) || string.IsNullOrWhiteSpace(id))
             return Result.Failure(AccountErrors.UserIdNotProvided);
         
-        var user = await userManager.FindByIdAsync(id);
+        var user = await context.Users
+            .Include(u => u.Department)
+            .FirstOrDefaultAsync(u => u.Id == id);
         if(user == null)
             return Result.Failure(AccountErrors.UserNotFound);
         
         return Result.Success(new UsersResponse(
-            Id: user.Id,
-            Email: user.Email,
-            Fullname: user.Fullname,
-            AvatarImageUrl: user.AvatarImageUrl,
-            DepartmentId: user.DepartmentId,
-            Department: user.Department.Name
-        ));
+                Id : user.Id,
+                Email : user.Email,
+                Fullname : user.Fullname,
+                AvatarImageUrl : user.AvatarImageUrl,
+                DepartmentId : user.DepartmentId,
+                Department : user.Department.Name
+            )
+        );
     }
 
-    public async Task<Result> GetAccountsByEmailAsync(string email)
+    public async Task<Result> GetAccountByEmailAsync(string email)
     {
         if (string.IsNullOrEmpty(email) || string.IsNullOrWhiteSpace(email))
             return Result.Failure(AccountErrors.UserEmailNotProvided);
         
-        var user = await userManager.FindByEmailAsync(email);
+        var user = await context.Users
+            .Include(u => u.Department)
+            .FirstOrDefaultAsync(u => u.Email == email);
         if(user == null)
             return Result.Failure(AccountErrors.UserNotFound);
-        
+
         return Result.Success(new UsersResponse(
-            Id: user.Id,
-            Email: user.Email,
-            Fullname: user.Fullname,
-            AvatarImageUrl: user.AvatarImageUrl,
-            DepartmentId: user.DepartmentId,
-            Department: user.Department.Name
-        ));
+            Id : user.Id,
+            Email : user.Email,
+            Fullname : user.Fullname,
+            AvatarImageUrl : user.AvatarImageUrl,
+            DepartmentId : user.DepartmentId,
+            Department : user.Department.Name
+            )
+        );
     }
 
     public async Task<Result> UpdateAccountAsync(UpdateAccountRequest request)

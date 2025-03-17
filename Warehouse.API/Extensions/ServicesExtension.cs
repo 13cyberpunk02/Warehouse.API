@@ -16,6 +16,7 @@ public static class ServicesExtension
         services.AddValidators();
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IAccountService, AccountService>();
         return services;
     }
 }
