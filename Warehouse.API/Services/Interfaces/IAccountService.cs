@@ -10,6 +10,6 @@ public interface IAccountService
     Task<Result> GetAccountsByEmailAsync(string email);
     Task<Result> UpdateAccountAsync(UpdateAccountRequest request);
     Task<Result> BanAccountAsync(BanAccountRequest request);
-    Task<Result> UnbanAccountAsync();
-    Task<Result> SetRoleToAccountAsync(string roleId);
+    Task<Result> UnbanAccountAsync(string userId);
+    Task<Result> SetRoleToAccountAsync(SetRoleToUserRequest request);
 }

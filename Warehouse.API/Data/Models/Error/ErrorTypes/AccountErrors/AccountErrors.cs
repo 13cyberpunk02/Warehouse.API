@@ -10,7 +10,10 @@ public static class AccountErrors
         new(ErrorTypeConstant.BadRequest, "Id пользователя не был передан");
     public static ErrorResponse UserEmailNotProvided => 
         new(ErrorTypeConstant.BadRequest, "Эл. почта пользователя не был передан");
-    
     public static ErrorResponse UserForUpdateNotFound => 
         new(ErrorTypeConstant.BadRequest, "Пользователь для обновления не найден");
+    public static ErrorResponse RoleNotFound => 
+        new(ErrorTypeConstant.BadRequest, "Роль не найден");
+    public static ErrorResponse UserAlreadyHasProvidedRole => 
+        new(ErrorTypeConstant.BadRequest, "Пользователь уже находится в данной роли");
 }

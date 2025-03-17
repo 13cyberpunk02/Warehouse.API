@@ -13,8 +13,10 @@ namespace Warehouse.API.Services.Implementations;
 
 public class AccountService(
     UserManager<AppUser> userManager,
+    RoleManager<IdentityRole> roleManager,
     UpdateAccountRequestValidator updateAccountRequestValidator,
-    BanAccountRequestValidator banAccountRequestValidator) : IAccountService
+    BanAccountRequestValidator banAccountRequestValidator,
+    SetRoleToUserValidator setRoleToUserValidator) : IAccountService
 {
     public async Task<Result> GetAllAccountsAsync()
     {
@@ -101,19 +103,59 @@ public class AccountService(
             return Result.Failure(ErrorsCollection.ErrorCollection(modelValidator.Errors.Select(x => x.ErrorMessage)));
         
         var user = await userManager.FindByIdAsync(request.UserId);
-        if(user == null)
+        if (user == null)
             return Result.Failure(AccountErrors.UserNotFound);
 
-        return Result.Success("");
+        var result = await userManager.SetLockoutEndDateAsync(user, request.BanUntilDate);
+        if(!result.Succeeded)
+            return Result.Failure(ErrorsCollection.ErrorCollection(result.Errors.Select(err => err.Description)));
+        
+        return Result.Success($"Пользователь ${user.Fullname} заблокирован успешно до ${request.BanUntilDate.ToLocalTime().Date}");
     }
 
-    public Task<Result> UnbanAccountAsync()
+    public async Task<Result> UnbanAccountAsync(string userId)
     {
-        throw new NotImplementedException();
+        if (string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(userId))
+            return Result.Failure(AccountErrors.UserIdNotProvided);
+        
+        var user = await userManager.FindByIdAsync(userId);
+        if (user == null)
+            return Result.Failure(AccountErrors.UserNotFound);
+        
+        var result = await userManager.SetLockoutEndDateAsync(user, null);
+        if (!result.Succeeded)
+            return Result.Failure(ErrorsCollection.ErrorCollection(result.Errors.Select(err => err.Description)));
+
+        return Result.Success($"Пользователь {user.Fullname} разблокирован");
     }
 
-    public Task<Result> SetRoleToAccountAsync(string roleId)
+    public async Task<Result> SetRoleToAccountAsync(SetRoleToUserRequest request)
     {
-        throw new NotImplementedException();
+        var modelValidation = await setRoleToUserValidator.ValidateAsync(request);
+        if(!modelValidation.IsValid)
+            return Result.Failure(ErrorsCollection.ErrorCollection(modelValidation.Errors.Select(x => x.ErrorMessage)));
+        
+        var user = await userManager.FindByIdAsync(request.UserId);
+        if(user is null)
+            return Result.Failure(AccountErrors.UserNotFound);
+        
+        var role = await roleManager.FindByIdAsync(request.RoleId);
+        if (role is null)
+            return Result.Failure(AccountErrors.RoleNotFound);
+        
+        var usersInRole = await userManager.GetUsersInRoleAsync(request.RoleId);
+        if (usersInRole.Contains(user))
+            return Result.Failure(AccountErrors.UserAlreadyHasProvidedRole);
+        
+        var userOldRoles = await userManager.GetRolesAsync(user);
+        var removeOldRoles = await userManager.RemoveFromRolesAsync(user, userOldRoles);
+        if(!removeOldRoles.Succeeded)
+            return Result.Failure(ErrorsCollection.ErrorCollection(removeOldRoles.Errors.Select(err => err.Description)));
+        
+        var result = await userManager.AddToRoleAsync(user, request.RoleId);
+        if(!result.Succeeded)
+            return Result.Failure(ErrorsCollection.ErrorCollection(result.Errors.Select(err => err.Description)));
+
+        return Result.Success($"Пользователю {user.Fullname} успешно назначена роль {role.Name}");
     }
 }
