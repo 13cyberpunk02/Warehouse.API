@@ -5,11 +5,14 @@ namespace Warehouse.API.Extensions;
 
 public static class ServicesExtension
 {
-    public static IServiceCollection AddAllServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddAllServices(this IServiceCollection services, 
+        IConfiguration configuration,
+        string corsName)
     {
         var dbConnectionString = configuration.GetConnectionString("SqliteConnection");
 
         services.AddDatabaseConnection(dbConnectionString);
+        services.AddCorePolicies(corsName);
         services.AddWarehouseIdentity();
         services.AddJwt(configuration);
         services.AddAuthorization();
