@@ -4,7 +4,7 @@ public static class AuthErrors
 {
     public static ErrorResponse InvalidRegistrationRequest => new (ErrorTypeConstant.ValidationError, "Неправильно заполнены данные в запросе");
     public static ErrorResponse UserAlreadyExists => new(ErrorTypeConstant.ValidationError, "Пользователь с данной эл. почтой уже существует");
-    public static ErrorResponse InvalidLoginRequest => new(ErrorTypeConstant.NotFound, "Неправильный логин или пароль");
+    public static ErrorResponse InvalidLoginRequest => new(ErrorTypeConstant.BadRequest, "Неправильный логин или пароль");
     public static ErrorResponse UserNotFound => new(ErrorTypeConstant.NotFound, "Пользователь не найден");
     public static ErrorResponse EmailEmptyOrNull => new(ErrorTypeConstant.NotFound, "Эл. почта пустая");
     public static ErrorResponse InvalidRefreshToken => new(ErrorTypeConstant.BadRequest, "Неверный токен обновления, авторизуйтесь заново");

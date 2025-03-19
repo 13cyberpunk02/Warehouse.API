@@ -13,6 +13,7 @@ public static class ServicesExtension
 
         services.AddDatabaseConnection(dbConnectionString);
         services.AddCorePolicies(corsName);
+        services.AddOpenApiExtension();
         services.AddWarehouseIdentity();
         services.AddJwt(configuration);
         services.AddAuthorization();
@@ -20,6 +21,7 @@ public static class ServicesExtension
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IAccountService, AccountService>();
+        services.AddScoped<IPaperService, PaperService>();
         return services;
     }
 }
