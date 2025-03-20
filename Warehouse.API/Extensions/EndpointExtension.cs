@@ -9,6 +9,8 @@ public static class EndpointExtension
         endpoints.MapAuthEndpoints();
         endpoints.MapAccountEndpoints();
         endpoints.MapPaperEndpoints();
+        endpoints.MapDepartmentEndpoints();
+        endpoints.MapDeliveryEndpoints();
         return endpoints;
     }
 }

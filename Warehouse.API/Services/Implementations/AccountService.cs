@@ -6,6 +6,7 @@ using Warehouse.API.Data.Models.DTO_s.Requests.Account;
 using Warehouse.API.Data.Models.DTO_s.Responses.Account;
 using Warehouse.API.Data.Models.Error.ErrorTypes;
 using Warehouse.API.Data.Models.Error.ErrorTypes.AccountErrors;
+using Warehouse.API.Data.Models.Error.ErrorTypes.DepartmentErrors;
 using Warehouse.API.Data.Models.Result;
 using Warehouse.API.Data.Validators.AccountValidators;
 using Warehouse.API.Services.Interfaces;
@@ -81,6 +82,29 @@ public class AccountService(
             DepartmentId : user.DepartmentId,
             Department : user.Department.Name
             )
+        );
+    }
+
+    public async Task<Result> GetAccountByDepartmentIdAsync(int departmentId)
+    {
+        var isDepartmentExist = await context.Departments.AnyAsync(d => d.Id == departmentId);
+        if(!isDepartmentExist)
+            return Result.Failure(DepartmentErrors.DepartmentNotFound);
+        var users = await context.Users
+            .Include(appUser => appUser.Department)
+            .Where(x => x.DepartmentId == departmentId)
+            .ToListAsync();
+        if(!users.Any())
+            return Result.Failure(AccountErrors.UserNotFound);
+        
+        return Result.Success(users.Select(x => new UsersResponse(
+                Id : x.Id,
+                Email : x.Email,
+                Fullname : x.Fullname,
+                AvatarImageUrl : x.AvatarImageUrl,
+                DepartmentId : x.DepartmentId,
+                Department : x.Department.Name
+            )) 
         );
     }
 

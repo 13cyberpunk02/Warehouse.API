@@ -22,6 +22,8 @@ public static class ServicesExtension
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<IPaperService, PaperService>();
+        services.AddScoped<IDepartmentService, DepartmentService>();
+        services.AddScoped<IDeliveryService, DeliveryService>();
         return services;
     }
 }

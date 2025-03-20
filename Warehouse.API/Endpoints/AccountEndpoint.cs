@@ -9,13 +9,14 @@ public static class AccountEndpoint
     public static IEndpointRouteBuilder MapAccountEndpoints(this IEndpointRouteBuilder endpoints)
     {
         var group = endpoints.MapGroup("api/account");
-        group.MapGet("/get-all-accounts", GetAllAccountsAsync);
-        group.MapGet("/get-account-by-id/{userId:required}", GetAccountById);
-        group.MapGet("/get-account-by-email/{email:required}", GetAccountByEmail);
-        group.MapPut("/update-account", UpdateAccount);
-        group.MapPut("/ban-account", BanAccount);
-        group.MapPut("/unban-account/{userId:required}", UnbanAccount);
-        group.MapPut("/set-account-role", SetRoleToAccount);
+        group.MapGet("/get-all-accounts", GetAllAccountsAsync).RequireAuthorization();
+        group.MapGet("/get-account-by-id/{userId:required}", GetAccountById).RequireAuthorization();
+        group.MapGet("/get-account-by-email/{email:required}", GetAccountByEmail).RequireAuthorization();
+        group.MapPut("/update-account", UpdateAccount).RequireAuthorization();
+        group.MapPut("/ban-account", BanAccount).RequireAuthorization();
+        group.MapPut("/unban-account/{userId:required}", UnbanAccount).RequireAuthorization();
+        group.MapPut("/set-account-role", SetRoleToAccount).RequireAuthorization();
+        group.MapGet("get-all-accounts-by-department-id/{departmentId:int}", GetAllUsersByDepartmentId).RequireAuthorization();
         return group;
     }
 
@@ -60,6 +61,12 @@ public static class AccountEndpoint
         SetRoleToUserRequest setRoleToUserRequest)
     {
         var response = await accountService.SetRoleToAccountAsync(setRoleToUserRequest);
+        return response.ToHttpResponse();
+    }
+
+    private static async Task<IResult> GetAllUsersByDepartmentId(IAccountService service, int departmentId)
+    {
+        var response = await service.GetAccountByDepartmentIdAsync(departmentId);
         return response.ToHttpResponse();
     }
 }

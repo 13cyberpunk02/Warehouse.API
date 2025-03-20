@@ -2,8 +2,8 @@
 
 public record UsersResponse(
     string Id, 
-    string Email, 
+    string? Email, 
     string Fullname, 
-    string AvatarImageUrl,
+    string? AvatarImageUrl,
     int DepartmentId,
     string Department);
