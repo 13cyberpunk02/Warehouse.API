@@ -19,9 +19,7 @@ public class Delivery
     [ForeignKey("ReceivedUserId")]
     public AppUser ReceivedUser { get; set; } = null!;
 
-    public int PaperId { get; set; }
-    [ForeignKey("PaperId")]
-    public Paper Paper { get; set; } = null!;
+    public string PaperFormat { get; set; } = string.Empty;
     
     public int Quantity { get; set; }
 }

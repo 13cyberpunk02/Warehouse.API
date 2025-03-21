@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using Warehouse.API.Data;
 using Warehouse.API.Data.Entities;
@@ -12,26 +13,29 @@ using Warehouse.API.Services.Interfaces;
 namespace Warehouse.API.Services.Implementations;
 
 public class DeliveryService(DataContext context, 
+    IJwtService jwtService,
     AddDeliveryRequestValidator requestValidator) : IDeliveryService
 {
     public async Task<Result> GetAllDeliveries()
     {
         var deliveries = await context.Deliveries
             .Include(u => u.DeliveredUser)
-            .Include(u => u.ReceivedUser).ThenInclude(appUser => appUser.Department)
-            .Include(u => u.Paper)
+            .Include(u => u.ReceivedUser)
+            .ThenInclude(appUser => appUser.Department)
             .OrderBy(x => x.DeliveredAt)
+            .AsSplitQuery() 
+            .AsNoTracking()
             .ToListAsync();
         if(!deliveries.Any())
             return Result.Failure(DeliveryErrors.DeliveryNotFound);
 
         var response = deliveries.Select(x => new DeliveriesResponse(
             Id: x.Id,
-            DeliveredAt: x.DeliveredAt,
+            DeliveredAt: x.DeliveredAt.ToString("dd.MM.yyyy"),
             DeliveredBy: x.DeliveredUser.Fullname,
             ReceivedDepartment: x.ReceivedUser.Department.Name,
             ReceivedUser: x.ReceivedUser.Fullname,
-            Paper: x.Paper.Format,
+            PaperFormat: x.PaperFormat,
             Quantity: x.Quantity
             ));
 
@@ -47,7 +51,6 @@ public class DeliveryService(DataContext context,
             .Include(u => u.DeliveredUser)
             .Include(u => u.ReceivedUser)
             .ThenInclude(appUser => appUser.Department)
-            .Include(u => u.Paper)
             .Where(x => 
                 x.ReceivedUser.Id == request.UserId 
                 && x.DeliveredAt > request.StartDate 
@@ -57,11 +60,11 @@ public class DeliveryService(DataContext context,
 
         var result = deliveries.Select(x => new DeliveriesResponse(
                 Id: x.Id,
-                DeliveredAt: x.DeliveredAt,
+                DeliveredAt: x.DeliveredAt.ToString("dd.MM.yyyy"),
                 DeliveredBy: x.DeliveredUser.Fullname,
                 ReceivedDepartment: x.ReceivedUser.Department.Name,
                 ReceivedUser: x.ReceivedUser.Fullname,
-                Paper: x.Paper.Format,
+                PaperFormat: x.PaperFormat,
                 Quantity: x.Quantity
             ))
             .Where(x => x.ReceivedUser == request.UserId).ToList();
@@ -74,20 +77,25 @@ public class DeliveryService(DataContext context,
         if(!modelValidation.IsValid)
             return Result.Failure(ErrorsCollection.ErrorCollection(modelValidation.Errors.Select(x => x.ErrorMessage)));
 
-        var deliveryToAdd = new Delivery()
-        {
-            ReceivedUserId = request.ReceivedUserId,
-            DeliveredAt = DateTime.Now,
-            DeliveredUserId = request.DeliveredUserId,
-            PaperId = request.PaperId,
-            Quantity = request.Quantity
-        };
-
+        var principal = jwtService.GetPrincipalFromExpiredToken(request.DeliveredUserToken);
+        var userId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
+        if(userId is null)
+            return Result.Failure(DeliveryErrors.AuthorizedUserTokenNotProvided);
+        
         var paper = await context.Papers.FirstOrDefaultAsync(x => x.Id == request.PaperId);
         if (paper is null)
             return Result.Failure(DeliveryErrors.PaperIsNotFound);
         if (paper.Quantity < request.Quantity)
             return Result.Failure(DeliveryErrors.DeliveryPaperQuantityIsGreater);
+        
+        var deliveryToAdd = new Delivery()
+        {
+            ReceivedUserId = request.ReceivedUserId,
+            DeliveredAt = DateTime.Now,
+            DeliveredUserId = userId,
+            PaperFormat = request.PaperFormat,
+            Quantity = request.Quantity
+        };
         
         paper.Quantity -= request.Quantity;
         context.Papers.Update(paper);

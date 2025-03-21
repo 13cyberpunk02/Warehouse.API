@@ -8,6 +8,9 @@ public static class DeliveryErrors
     public static ErrorResponse UserIdAndDepartmentIdNotProvided => 
         new(ErrorTypeConstant.BadRequest, "Id пользователя и отдела не указано");
     
+    public static ErrorResponse AuthorizedUserTokenNotProvided => 
+        new(ErrorTypeConstant.BadRequest, "Вы не авторизованы, для добавления данных");
+    
     public static ErrorResponse DeliverySaveError => 
         new(ErrorTypeConstant.InternalServerError, "Ошибка при сохранении данных");
 }
