@@ -11,7 +11,6 @@ public static class DeliveryEndpoint
         var group = endpoints.MapGroup("api/delivery");
         group.MapGet("/get-all-deliveries", GetAllDeliveries).RequireAuthorization();
         group.MapPost("/add-delivery", AddDelivery).RequireAuthorization();
-        group.MapPost("/get-delivery-by-time-user-department", GetAllDeliveriesByDepartmentOrUserAndTime).RequireAuthorization();
         return group;
     }
 
@@ -24,13 +23,6 @@ public static class DeliveryEndpoint
     private static async Task<IResult> AddDelivery(IDeliveryService service, AddDeliveryRequest request)
     {
         var response = await service.AddDelivery(request);
-        return response.ToHttpResponse();
-    }
-
-    private static async Task<IResult> GetAllDeliveriesByDepartmentOrUserAndTime(IDeliveryService service,
-        GetDeliveryByUserOrDepartment request)
-    {
-        var response = await service.GetAllDeliveriesByDepartmentOrUser(request);
         return response.ToHttpResponse();
     }
 }

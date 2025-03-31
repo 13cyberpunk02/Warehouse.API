@@ -39,6 +39,12 @@ public static class JwtExtension
                     }
                 };
             });
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+            options.AddPolicy("Paper", policy => policy.RequireRole("Paper", "Admin"));
+            options.AddPolicy("Cartridge", policy => policy.RequireRole("Admin", "Cartridge"));
+        });
         return services;
     }
 }

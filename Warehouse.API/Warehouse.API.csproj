@@ -23,7 +23,18 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Data\Models\DTO`s\Requests\Department\" />
-    </ItemGroup>
-
+      <_ContentIncludedByDefault Remove="wwwroot\bg.jpg" />
+      <_ContentIncludedByDefault Remove="wwwroot\cartridge.jpg" />
+      <_ContentIncludedByDefault Remove="wwwroot\favicon.ico" />
+      <_ContentIncludedByDefault Remove="wwwroot\history.jpg" />
+      <_ContentIncludedByDefault Remove="wwwroot\index.html" />
+      <_ContentIncludedByDefault Remove="wwwroot\main-DQ74XH74.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\paper-add.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\paper-delivery.jpg" />
+      <_ContentIncludedByDefault Remove="wwwroot\paper.jpg" />
+      <_ContentIncludedByDefault Remove="wwwroot\pic.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\polyfills-FFHMD2TL.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\print.jpg" />
+      <_ContentIncludedByDefault Remove="wwwroot\styles-R6EDCM7H.css" />
+    </ItemGroup>    
 </Project>

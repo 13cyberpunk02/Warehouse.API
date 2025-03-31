@@ -12,5 +12,5 @@ public class Department
     [MinLength(3, ErrorMessage = "Наименование отдела может содержать не менее 3 букв")]
     public string Name { get; set; } = string.Empty;
 
-    public List<AppUser> Employee { get; set; } = new();
+    public List<AppUser> Employees { get; set; } = new();
 }

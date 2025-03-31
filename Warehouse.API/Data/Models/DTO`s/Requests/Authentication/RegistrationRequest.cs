@@ -1,10 +1,11 @@
 ﻿namespace Warehouse.API.Data.Models.DTO_s.Requests.Authentication;
 
 public record RegistrationRequest(
-    string Email,
+    string Username,
     string Firstname,
     string Lastname,
     string Password,
+    string RoleName,
     string ConfirmPassword,
     int DepartmentId);
 

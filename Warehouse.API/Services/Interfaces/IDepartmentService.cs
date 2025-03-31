@@ -1,3 +1,4 @@
+using Warehouse.API.Data.Models.DTO_s.Requests.Department;
 using Warehouse.API.Data.Models.DTO_s.Responses.Department;
 using Warehouse.API.Data.Models.Result;
 
@@ -9,6 +10,6 @@ public interface IDepartmentService
     Task<Result> GetDepartmentById(int departmentId);
     Task<Result> GetDepartmentByName(string name);
     Task<Result> AddDepartment(string name);
-    Task<Result> UpdateDepartment(string newName);
+    Task<Result> UpdateDepartment(UpdateDepartmentRequest request);
     Task<Result> DeleteDepartment(int id);
 }

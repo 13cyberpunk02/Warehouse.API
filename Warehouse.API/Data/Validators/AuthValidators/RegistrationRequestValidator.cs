@@ -7,10 +7,11 @@ public class RegistrationRequestValidator :AbstractValidator<RegistrationRequest
 {
     public RegistrationRequestValidator()
     {
-        RuleFor(x => x.Email)
-            .NotEmpty().WithMessage("Эл. почта обязательна к заполнению")
-            .NotNull().WithMessage("Эл. почта обязательна к заполнению")
-            .EmailAddress().WithMessage("Эл. почта заполнена неправильно");
+        RuleFor(x => x.Username)
+            .NotEmpty().WithMessage("Имя пользователя обязательна к заполнению")
+            .NotNull().WithMessage("Имя пользователя обязательна к заполнению")
+            .MinimumLength(2).WithMessage("Имя пользователя может содержать не меньше 2 букв")
+            .MaximumLength(20).WithMessage("Имя пользователя может содержать не больше 20 букв");
 
         RuleFor(x => x.Firstname)
             .NotEmpty().WithMessage("Имя сотрудника обязательна к заполнению")
@@ -35,6 +36,10 @@ public class RegistrationRequestValidator :AbstractValidator<RegistrationRequest
             .Equal(p => p.Password)
             .WithMessage("Пароль подтверждения и пароль не совпадают");
 
+        RuleFor(x => x.RoleName)
+            .NotEmpty().WithMessage("Роль не может быть пустым")
+            .NotNull().WithMessage("Роль не может быть пустым");
+        
         RuleFor(x => x.DepartmentId)
             .NotEmpty().WithMessage("Отдел не может быть пустым")
             .NotNull().WithMessage("Отдел не может быть пустым");

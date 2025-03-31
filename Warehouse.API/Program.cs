@@ -28,6 +28,11 @@ app.UseHttpsRedirection();
 app.UseCors(corsPolicyName);
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 app.MapAllEndpoints();
+app.MapFallbackToFile("index.html");
 
 app.Run();

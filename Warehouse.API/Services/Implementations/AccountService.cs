@@ -18,27 +18,28 @@ public class AccountService(
     UserManager<AppUser> userManager,
     RoleManager<IdentityRole> roleManager,
     UpdateAccountRequestValidator updateAccountRequestValidator,
-    BanAccountRequestValidator banAccountRequestValidator,
+    ChangePasswordRequestValidator changePasswordRequestValidator,
     SetRoleToUserValidator setRoleToUserValidator) : IAccountService
 {
     public async Task<Result> GetAllAccountsAsync()
     {
         var users = await context.Users
-            .Include(u => u.Department)
-            .ToListAsync();
+            .Select(user => new UsersResponse(
+                user.Id,
+                user.UserName,
+                user.Fullname,
+                user.Firstname,
+                user.Lastname,
+                user.DepartmentId,
+                context.Departments
+                    .Where(department => department.Id == user.DepartmentId)
+                    .Select(department => department.Name)
+                    .FirstOrDefault() ?? "Без отдела",  
+                userManager.GetRolesAsync(user).GetAwaiter().GetResult().FirstOrDefault()
+            )).ToListAsync();
         if(users.Count == 0)
             return Result.Failure(AccountErrors.EmptyUsersListError);
-
-        var response = users.Select(user => new UsersResponse(
-            Id : user.Id,
-            Email : user.Email,
-            Fullname : user.Fullname,
-            AvatarImageUrl : user.AvatarImageUrl,
-            DepartmentId : user.DepartmentId,
-            Department : user.Department.Name
-        ));
-
-        return Result.Success(response);
+        return Result.Success(users);
     }
 
     public async Task<Result> GetAccountByIdAsync(string id)
@@ -54,11 +55,13 @@ public class AccountService(
         
         return Result.Success(new UsersResponse(
                 Id : user.Id,
-                Email : user.Email,
+                UserName : user.UserName,
                 Fullname : user.Fullname,
-                AvatarImageUrl : user.AvatarImageUrl,
+                Firstname: user.Firstname,
+                Lastname: user.Lastname,
                 DepartmentId : user.DepartmentId,
-                Department : user.Department.Name
+                Department : user.Department.Name,
+                RoleName: userManager.GetRolesAsync(user).GetAwaiter().GetResult().FirstOrDefault()
             )
         );
     }
@@ -76,11 +79,13 @@ public class AccountService(
 
         return Result.Success(new UsersResponse(
             Id : user.Id,
-            Email : user.Email,
+            UserName : user.UserName,
             Fullname : user.Fullname,
-            AvatarImageUrl : user.AvatarImageUrl,
+            Firstname: user.Firstname,
+            Lastname: user.Lastname,
             DepartmentId : user.DepartmentId,
-            Department : user.Department.Name
+            Department : user.Department.Name,
+            RoleName: userManager.GetRolesAsync(user).GetAwaiter().GetResult().FirstOrDefault()
             )
         );
     }
@@ -97,13 +102,15 @@ public class AccountService(
         if(!users.Any())
             return Result.Failure(AccountErrors.UserNotFound);
         
-        return Result.Success(users.Select(x => new UsersResponse(
-                Id : x.Id,
-                Email : x.Email,
-                Fullname : x.Fullname,
-                AvatarImageUrl : x.AvatarImageUrl,
-                DepartmentId : x.DepartmentId,
-                Department : x.Department.Name
+        return Result.Success(users.Select(user => new UsersResponse(
+                Id : user.Id,
+                UserName : user.UserName,
+                Fullname : user.Fullname,
+                Firstname: user.Firstname,
+                Lastname : user.Lastname,
+                DepartmentId : user.DepartmentId,
+                Department : user.Department.Name,
+                RoleName: userManager.GetRolesAsync(user).GetAwaiter().GetResult().FirstOrDefault()
             )) 
         );
     }
@@ -114,15 +121,25 @@ public class AccountService(
         if(!modelValidator.IsValid)
             return Result.Failure(ErrorsCollection.ErrorCollection(modelValidator.Errors.Select(x => x.ErrorMessage)));
 
-        var user = await userManager.FindByEmailAsync(request.Email);
+        var user = await userManager.FindByIdAsync(request.Id);
         if(user == null)
             return Result.Failure(AccountErrors.UserForUpdateNotFound);
         
-        user.Email = request.Email;
+        var role = await roleManager.FindByNameAsync(request.RoleName);
+        if(role == null || string.IsNullOrEmpty(role.Name))
+            return Result.Failure(AccountErrors.RoleNotFound);
+
+        if (!await userManager.IsInRoleAsync(user, role.Name))
+        {
+            var userRoles = await userManager.GetRolesAsync(user);
+            await userManager.RemoveFromRolesAsync(user, userRoles);
+            await userManager.AddToRoleAsync(user, role.Name);
+        }
+        
+        user.UserName = request.UserName;
         user.Firstname = request.Firstname;
         user.Lastname = request.Lastname;
         user.DepartmentId = request.DepartmentId;
-        user.AvatarImageUrl = request.AvatarImageUrl;
         
         var result = await userManager.UpdateAsync(user);
         if(!result.Succeeded)
@@ -131,37 +148,40 @@ public class AccountService(
         return Result.Success($"Данные пользователя {user.Firstname} {user.Lastname} успешно обновлены");
     }
 
-    public async Task<Result> BanAccountAsync(BanAccountRequest request)
+    public async Task<Result> ChangePasswordAsync(ChangePasswordRequest request)
     {
-        var modelValidator = await banAccountRequestValidator.ValidateAsync(request);
+        var modelValidator = await changePasswordRequestValidator.ValidateAsync(request);
         if(!modelValidator.IsValid)
             return Result.Failure(ErrorsCollection.ErrorCollection(modelValidator.Errors.Select(x => x.ErrorMessage)));
-        
-        var user = await userManager.FindByIdAsync(request.UserId);
-        if (user == null)
-            return Result.Failure(AccountErrors.UserNotFound);
 
-        var result = await userManager.SetLockoutEndDateAsync(user, request.BanUntilDate);
+        var user = await userManager.FindByIdAsync(request.UserId);
+        if(user is null)
+            return Result.Failure(AccountErrors.UserNotFound);
+        
+        var isOldPasswordCorrect = await userManager.CheckPasswordAsync(user, request.OldPassword);
+        if (!isOldPasswordCorrect)
+            return Result.Failure(AccountErrors.OldPasswordIncorrect);
+        
+        var result = await userManager.ChangePasswordAsync(user, request.OldPassword, request.NewPassword);
+
         if(!result.Succeeded)
             return Result.Failure(ErrorsCollection.ErrorCollection(result.Errors.Select(err => err.Description)));
-        
-        return Result.Success($"Пользователь ${user.Fullname} заблокирован успешно до ${request.BanUntilDate.ToLocalTime().Date}");
+        return Result.Success($"Пароль пользователя {user.Fullname} успешно заменен");
     }
 
-    public async Task<Result> UnbanAccountAsync(string userId)
+    public async Task<Result> DeleteAccountAsync(string userId)
     {
-        if (string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(userId))
+        if(string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(userId))
             return Result.Failure(AccountErrors.UserIdNotProvided);
         
         var user = await userManager.FindByIdAsync(userId);
-        if (user == null)
+        if(user is null)
             return Result.Failure(AccountErrors.UserNotFound);
         
-        var result = await userManager.SetLockoutEndDateAsync(user, null);
-        if (!result.Succeeded)
+        var result = await userManager.DeleteAsync(user);
+        if(!result.Succeeded)
             return Result.Failure(ErrorsCollection.ErrorCollection(result.Errors.Select(err => err.Description)));
-
-        return Result.Success($"Пользователь {user.Fullname} разблокирован");
+        return Result.Success("Пользователь успешно удален");
     }
 
     public async Task<Result> SetRoleToAccountAsync(SetRoleToUserRequest request)
@@ -187,10 +207,21 @@ public class AccountService(
         if(!removeOldRoles.Succeeded)
             return Result.Failure(ErrorsCollection.ErrorCollection(removeOldRoles.Errors.Select(err => err.Description)));
         
-        var result = await userManager.AddToRoleAsync(user, request.RoleId);
+        var result = await userManager.AddToRoleAsync(user, role.Name);
         if(!result.Succeeded)
             return Result.Failure(ErrorsCollection.ErrorCollection(result.Errors.Select(err => err.Description)));
 
         return Result.Success($"Пользователю {user.Fullname} успешно назначена роль {role.Name}");
+    }
+
+    public async Task<Result> GetUserRolesAsync(string userId)
+    {
+        if(string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(userId))
+            return Result.Failure(AccountErrors.UserIdNotProvided);
+        var user = await userManager.FindByIdAsync(userId);
+        if(user is null)
+            return Result.Failure(AccountErrors.UserNotFound);
+        var roles = await userManager.GetRolesAsync(user);
+        return Result.Success(roles);
     }
 }

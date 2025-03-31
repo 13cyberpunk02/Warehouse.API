@@ -10,12 +10,12 @@ using Warehouse.API.Data.Models.Result;
 using Warehouse.API.Data.Options;
 using Warehouse.API.Data.Validators.AuthValidators;
 using Warehouse.API.Services.Interfaces;
-using LoginRequest = Warehouse.API.Data.Models.DTO_s.Requests.Authentication.LoginRequest;
 
 namespace Warehouse.API.Services.Implementations;
 
 public class AuthService(
     UserManager<AppUser> userManager,
+    RoleManager<IdentityRole> roleManager,
     IJwtService jwtService,
     IOptions<JwtConfiguration> jwtOptions,
     RegistrationRequestValidator registrationRequestValidator,
@@ -30,7 +30,7 @@ public class AuthService(
         if (!modelValidation.IsValid)
             return Result.Failure(ErrorsCollection.ErrorCollection(modelValidation.Errors.Select(x => x.ErrorMessage)));
         
-        var user = await userManager.FindByEmailAsync(request.Email);
+        var user = await userManager.FindByNameAsync(request.Username);
         if(user is null)
             return Result.Failure(AuthErrors.UserNotFound);
         
@@ -97,14 +97,17 @@ public class AuthService(
         if(!modelValidation.IsValid)
             return Result.Failure(ErrorsCollection.ErrorCollection(modelValidation.Errors.Select(x => x.ErrorMessage)));
         
-        var isUserExist = await userManager.FindByEmailAsync(request.Email);
+        var role = await roleManager.FindByNameAsync(request.RoleName);
+        if(role is null)
+            return Result.Failure(AuthErrors.RoleNotFound);
+        
+        var isUserExist = await userManager.FindByNameAsync(request.Username);
         if(isUserExist is not null)
             return Result.Failure(AuthErrors.UserAlreadyExists);
 
         var newUser = new AppUser
         {
-            Email = request.Email,
-            UserName = request.Email,
+            UserName = request.Username,
             Firstname = request.Firstname,
             Lastname = request.Lastname,
             DepartmentId = request.DepartmentId
@@ -113,6 +116,11 @@ public class AuthService(
         var result = await userManager.CreateAsync(newUser, request.Password);
         if(!result.Succeeded)
             return Result.Failure(ErrorsCollection.ErrorCollection(result.Errors.Select(e => e.Description)));
-        return Result.Success(new RegistrationResponse("Регистрация прошла успешно, вы можете теперь авторизоваться"));
+        
+        var addingToRole =  await userManager.AddToRoleAsync(newUser, role.Name);
+        if(!addingToRole.Succeeded)
+            return Result.Failure(ErrorsCollection.ErrorCollection(addingToRole.Errors.Select(e => e.Description)));
+        
+        return Result.Success("Регистрация прошла успешно, вы можете теперь авторизоваться");
     }
 }

@@ -2,8 +2,10 @@
 
 public record UsersResponse(
     string Id, 
-    string? Email, 
+    string? UserName, 
     string Fullname, 
-    string? AvatarImageUrl,
-    int DepartmentId,
-    string Department);
+    string Firstname, 
+    string Lastname,
+    int? DepartmentId,
+    string? Department,
+    string? RoleName);

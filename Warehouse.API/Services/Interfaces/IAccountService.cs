@@ -10,7 +10,8 @@ public interface IAccountService
     Task<Result> GetAccountByEmailAsync(string email);
     Task<Result> GetAccountByDepartmentIdAsync(int departmentId);
     Task<Result> UpdateAccountAsync(UpdateAccountRequest request);
-    Task<Result> BanAccountAsync(BanAccountRequest request);
-    Task<Result> UnbanAccountAsync(string userId);
+    Task<Result> ChangePasswordAsync(ChangePasswordRequest request);
+    Task<Result> DeleteAccountAsync(string userId);
     Task<Result> SetRoleToAccountAsync(SetRoleToUserRequest request);
+    Task<Result> GetUserRolesAsync(string userId);
 }

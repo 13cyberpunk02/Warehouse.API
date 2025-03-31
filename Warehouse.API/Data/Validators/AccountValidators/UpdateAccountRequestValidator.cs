@@ -7,10 +7,13 @@ public class UpdateAccountRequestValidator : AbstractValidator<UpdateAccountRequ
 {
     public UpdateAccountRequestValidator()
     {
-        RuleFor(x => x.Email)
-            .NotEmpty().WithMessage("Эл. почта обязательна к заполнению")
-            .NotNull().WithMessage("Эл. почта обязательна к заполнению")
-            .EmailAddress().WithMessage("Эл. почта заполнена неправильно");
+        RuleFor(x => x.Id)
+            .NotEmpty().WithMessage("Id пользователя не может быть пустым")
+            .NotNull().WithMessage("Id пользователя не был создан/отправлен");
+
+        RuleFor(x => x.UserName)
+            .NotEmpty().WithMessage("Имя пользователя обязательна к заполнению")
+            .NotNull().WithMessage("Имя пользователя обязательна к заполнению");
 
         RuleFor(x => x.Firstname)
             .NotEmpty().WithMessage("Имя сотрудника обязательна к заполнению")
@@ -27,5 +30,9 @@ public class UpdateAccountRequestValidator : AbstractValidator<UpdateAccountRequ
         RuleFor(x => x.DepartmentId)
             .NotEmpty().WithMessage("Отдел не может быть пустым")
             .NotNull().WithMessage("Отдел не может быть пустым");
+        
+        RuleFor(x => x.RoleName)
+            .NotEmpty().WithMessage("Роль не может быть пустым")
+            .NotNull().WithMessage("Роль не может быть пустым");
     }
 }

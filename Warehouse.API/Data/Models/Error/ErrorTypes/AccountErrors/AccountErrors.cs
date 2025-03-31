@@ -12,6 +12,8 @@ public static class AccountErrors
         new(ErrorTypeConstant.BadRequest, "Эл. почта пользователя не был передан");
     public static ErrorResponse UserForUpdateNotFound => 
         new(ErrorTypeConstant.BadRequest, "Пользователь для обновления не найден");
+    public static ErrorResponse OldPasswordIncorrect => 
+        new(ErrorTypeConstant.BadRequest, "Указан не верный пароль(имеющийся)");
     public static ErrorResponse RoleNotFound => 
         new(ErrorTypeConstant.BadRequest, "Роль не найден");
     public static ErrorResponse UserAlreadyHasProvidedRole => 

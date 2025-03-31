@@ -6,6 +6,5 @@ namespace Warehouse.API.Services.Interfaces;
 public interface IDeliveryService
 {
     Task<Result> GetAllDeliveries();
-    Task<Result> GetAllDeliveriesByDepartmentOrUser(GetDeliveryByUserOrDepartment request);
     Task<Result> AddDelivery(AddDeliveryRequest request);
 }

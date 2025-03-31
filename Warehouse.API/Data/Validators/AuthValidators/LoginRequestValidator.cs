@@ -7,10 +7,11 @@ public class LoginRequestValidator :AbstractValidator<LoginRequest>
 {
     public LoginRequestValidator()
     {
-        RuleFor(x => x.Email)
-            .NotEmpty().WithMessage("Эл. почта обязательна к заполнению")
-            .NotNull().WithMessage("Эл. почта обязательна к заполнению")
-            .EmailAddress().WithMessage("Эл. почта введена неправильно");
+        RuleFor(x => x.Username)
+            .NotEmpty().WithMessage("Имя пользователя обязательна к заполнению")
+            .NotNull().WithMessage("Имя пользователя обязательна к заполнению")
+            .MinimumLength(2).WithMessage("Имя пользователя может содержать не меньше 2 букв")
+            .MaximumLength(20).WithMessage("Имя пользователя может содержать не больше 20 букв");
 
         RuleFor(x => x.Password)
             .NotEmpty().WithMessage("Пароль обязателен к заполнению")

@@ -12,11 +12,13 @@ public static class AccountEndpoint
         group.MapGet("/get-all-accounts", GetAllAccountsAsync).RequireAuthorization();
         group.MapGet("/get-account-by-id/{userId:required}", GetAccountById).RequireAuthorization();
         group.MapGet("/get-account-by-email/{email:required}", GetAccountByEmail).RequireAuthorization();
-        group.MapPut("/update-account", UpdateAccount).RequireAuthorization();
-        group.MapPut("/ban-account", BanAccount).RequireAuthorization();
-        group.MapPut("/unban-account/{userId:required}", UnbanAccount).RequireAuthorization();
-        group.MapPut("/set-account-role", SetRoleToAccount).RequireAuthorization();
+        group.MapGet("/get-user-roles/{userId:required}", GetUserRoles).RequireAuthorization();
+        group.MapPut("/update-account", UpdateAccount).RequireAuthorization("Admin");
+        group.MapPut("/set-account-role", SetRoleToAccount).RequireAuthorization("Admin");
         group.MapGet("get-all-accounts-by-department-id/{departmentId:int}", GetAllUsersByDepartmentId).RequireAuthorization();
+        group.MapGet("/get-all-roles", GetRoles).RequireAuthorization("Admin");
+        group.MapPut("/change-password", ChangePassword).RequireAuthorization("Admin");
+        group.MapDelete("/delete-account/{userId:required}", DeleteAccount).RequireAuthorization("Admin");
         return group;
     }
 
@@ -44,19 +46,6 @@ public static class AccountEndpoint
         var response = await accountService.UpdateAccountAsync(updateAccountRequest);
         return response.ToHttpResponse();
     }
-
-    private static async Task<IResult> BanAccount(IAccountService accountService, BanAccountRequest banAccountRequest)
-    {
-        var response = await accountService.BanAccountAsync(banAccountRequest);
-        return response.ToHttpResponse();
-    }
-
-    private static async Task<IResult> UnbanAccount(IAccountService accountService, string userId)
-    {
-        var response = await accountService.UnbanAccountAsync(userId);
-        return response.ToHttpResponse();
-    }
-
     private static async Task<IResult> SetRoleToAccount(IAccountService accountService,
         SetRoleToUserRequest setRoleToUserRequest)
     {
@@ -67,6 +56,31 @@ public static class AccountEndpoint
     private static async Task<IResult> GetAllUsersByDepartmentId(IAccountService service, int departmentId)
     {
         var response = await service.GetAccountByDepartmentIdAsync(departmentId);
+        return response.ToHttpResponse();
+    }
+
+    private static async Task<IResult> GetUserRoles(IAccountService accountService, string userId)
+    {
+        var response = await accountService.GetUserRolesAsync(userId);
+        return response.ToHttpResponse();
+    }
+
+    private static async Task<IResult> GetRoles(IUserRoleService userRoleService)
+    {
+        var response = await userRoleService.GetAllRoles();
+        return response.ToHttpResponse();
+    }
+
+    private static async Task<IResult> ChangePassword(IAccountService accountService,
+        ChangePasswordRequest changePasswordRequest)
+    {
+        var response = await accountService.ChangePasswordAsync(changePasswordRequest);
+        return response.ToHttpResponse();
+    }
+
+    private static async Task<IResult> DeleteAccount(IAccountService accountService, string userId)
+    {
+        var response = await accountService.DeleteAccountAsync(userId);
         return response.ToHttpResponse();
     }
 }

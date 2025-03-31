@@ -24,18 +24,27 @@ public class DataContext(DbContextOptions<DataContext> options) : IdentityDbCont
     {
         var hasher = new PasswordHasher<AppUser>();
         base.OnModelCreating(modelBuilder);
-
+     
+        modelBuilder.Entity<AppUser>()
+            .HasOne(u => u.Department)
+            .WithMany(d => d.Employees)
+            .HasForeignKey(u => u.DepartmentId)
+            .OnDelete(DeleteBehavior.SetNull);
+        
         modelBuilder.Entity<Department>()
             .HasData(new Department { Id = 1, Name = "ИТ" });
         
         modelBuilder.Entity<IdentityRole>()
-            .HasData(new IdentityRole { Id = "1", Name = "Admin", NormalizedName = "ADMIN" });
+            .HasData(
+                new IdentityRole { Id = "1", Name = "Admin", NormalizedName = "ADMIN" },
+                new IdentityRole { Id = "2", Name = "Paper", NormalizedName = "PAPER" },
+                new IdentityRole { Id = "3", Name = "Cartridge", NormalizedName = "CARTRIDGE" });
         
         var user = new AppUser
             {
                 Id = "1", // Фиксированный Id
-                UserName = "admin@domain.ru",
-                NormalizedUserName = "ADMIN@DOMAIN.RU",
+                UserName = "admin",
+                NormalizedUserName = "ADMIN",
                 Email = "admin@domain.ru",
                 NormalizedEmail = "ADMIN@DOMAIN.RU",
                 EmailConfirmed = true,

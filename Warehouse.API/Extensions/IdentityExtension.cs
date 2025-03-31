@@ -15,6 +15,7 @@ public static class IdentityExtension
                 options.Password.RequireLowercase = false;
                 options.Password.RequireUppercase = false;
                 options.Password.RequireNonAlphanumeric = false;
+                options.User.RequireUniqueEmail = false;
             })
             .AddRoles<IdentityRole>()
             .AddRoleManager<RoleManager<IdentityRole>>()

@@ -16,7 +16,6 @@ public static class ServicesExtension
         services.AddOpenApiExtension();
         services.AddWarehouseIdentity();
         services.AddJwt(configuration);
-        services.AddAuthorization();
         services.AddValidators();
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<IAuthService, AuthService>();
@@ -24,6 +23,7 @@ public static class ServicesExtension
         services.AddScoped<IPaperService, PaperService>();
         services.AddScoped<IDepartmentService, DepartmentService>();
         services.AddScoped<IDeliveryService, DeliveryService>();
+        services.AddScoped<IUserRoleService, UserRoleService>();
         return services;
     }
 }

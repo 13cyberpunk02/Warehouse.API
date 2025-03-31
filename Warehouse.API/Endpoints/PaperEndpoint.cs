@@ -10,11 +10,11 @@ public static class PaperEndpoint
     public static IEndpointRouteBuilder MapPaperEndpoints(this IEndpointRouteBuilder endpoints)
     {
         var group = endpoints.MapGroup("api/paper");
-        group.MapGet("/get-all-papers", GetAllPapers).RequireAuthorization();
-        group.MapGet("/get-paper/{paperId:int}", GetPaperById).RequireAuthorization();
-        group.MapPost("/add-paper", AddPaper).RequireAuthorization();
-        group.MapPut("/update-paper", UpdatePaper).RequireAuthorization();
-        group.MapDelete("/delete-paper/{paperId:int}", DeletePaper).RequireAuthorization();
+        group.MapGet("/get-all-papers", GetAllPapers).RequireAuthorization("Paper");
+        group.MapGet("/get-paper/{paperId:int}", GetPaperById).RequireAuthorization("Paper");
+        group.MapPost("/add-paper", AddPaper).RequireAuthorization("Paper");
+        group.MapPut("/update-paper", UpdatePaper).RequireAuthorization("Paper");
+        group.MapDelete("/delete-paper/{paperId:int}", DeletePaper).RequireAuthorization("Paper");
         return group;   
     }
 

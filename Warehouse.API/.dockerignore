@@ -1,0 +1,8 @@
+# Игнорируем ненужные файлы
+node_modules/
+**/node_modules/
+**/bin/
+**/obj/
+.git/
+.vs/
+.vscode/
