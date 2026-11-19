@@ -4,7 +4,9 @@ public static class DeliveryErrors
 {
     public static ErrorResponse DeliveryNotFound => new(ErrorTypeConstant.NotFound, "Выдача бумаг не найдена");
     public static ErrorResponse PaperIsNotFound => new(ErrorTypeConstant.NotFound, "Указанная бумага для выдачи не найдена");
+    public static ErrorResponse CartridgeIsNotFound => new(ErrorTypeConstant.NotFound, "Указанный картридж для выдачи не найдена");
     public static ErrorResponse DeliveryPaperQuantityIsGreater => new(ErrorTypeConstant.BadRequest, "Количество для выдачи бумаг превышает количество бумаг на складе");
+    public static ErrorResponse DeliveryCartridgeQuantityIsGreater => new(ErrorTypeConstant.BadRequest, "Количество для выдачи картриджа превышает количество картриджей имеющихся на складе");
     public static ErrorResponse UserIdAndDepartmentIdNotProvided => 
         new(ErrorTypeConstant.BadRequest, "Id пользователя и отдела не указано");
     

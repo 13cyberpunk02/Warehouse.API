@@ -5,6 +5,8 @@ namespace Warehouse.API.Services.Interfaces;
 
 public interface IDeliveryService
 {
-    Task<Result> GetAllDeliveries();
-    Task<Result> AddDelivery(AddDeliveryRequest request);
+    Task<Result> GetAllPaperDeliveries();
+    Task<Result> GetAllCartridgeDeliveries();
+    Task<Result> AddPaperDelivery(AddDeliveryRequest request, string deliveredUserId);
+    Task<Result> AddCartridgeDelivery(AddDeliveryRequest request, string deliveredUserId);
 }

@@ -16,6 +16,6 @@ public class LoginRequestValidator :AbstractValidator<LoginRequest>
         RuleFor(x => x.Password)
             .NotEmpty().WithMessage("Пароль обязателен к заполнению")
             .NotNull().WithMessage("Пароль обязателен к заполнению")
-            .MinimumLength(6).WithMessage("Количество символов в пароле не должно быть меньше 6");
+            .MinimumLength(5).WithMessage("Количество символов в пароле не должно быть меньше 5");
     }
 }

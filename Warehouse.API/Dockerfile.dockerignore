@@ -1,0 +1,19 @@
+# Пути относительно контекста сборки (папка с Warehouse.API и Warehouse.WebUI)
+**/.git
+**/.idea
+**/.vs
+**/.vscode
+**/.angular
+**/node_modules
+**/bin
+**/obj
+**/dist
+**/*.db
+**/*.db-shm
+**/*.db-wal
+**/.env
+Warehouse.API/Warehouse.API/data
+Warehouse.API/Warehouse.API/deploy
+**/wwwroot/files
+**/*.DotSettings.user
+.claude

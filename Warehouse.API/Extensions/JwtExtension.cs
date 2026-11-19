@@ -9,7 +9,7 @@ public static class JwtExtension
 {
     public static IServiceCollection AddJwt(this IServiceCollection services, IConfiguration configuration)
     {
-        var jwtOptions = configuration.GetSection("JwtConfiguration").Get<JwtConfiguration>();  
+        var jwtOptions = configuration.GetSection("JwtConfiguration").Get<JwtConfiguration>() ?? new JwtConfiguration();
 
         services.AddAuthentication(options =>
             {
@@ -21,7 +21,7 @@ public static class JwtExtension
                 options.TokenValidationParameters = new TokenValidationParameters()
                 {
                     ValidateIssuer = true,
-                    ValidIssuer = jwtOptions!.Issuer,
+                    ValidIssuer = jwtOptions.Issuer,
                     ValidateAudience = true,
                     ValidAudience = jwtOptions.Audience,
                     ValidateLifetime = true,
@@ -33,8 +33,9 @@ public static class JwtExtension
                 {
                     OnAuthenticationFailed = context =>
                     {
-                        var logger = services.BuildServiceProvider().GetRequiredService<ILogger<Program>>();
-                        logger.LogError($"({DateTime.UtcNow.ToLocalTime().Hour}:{DateTime.UtcNow.ToLocalTime().Minute})Authentication failed: " + context.Exception.Message);
+                        // Берём логгер из контейнера запроса: BuildServiceProvider() создавал второй DI-контейнер
+                        var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+                        logger.LogWarning("Authentication failed: {Message}", context.Exception.Message);
                         return Task.CompletedTask;
                     }
                 };

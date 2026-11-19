@@ -3,3 +3,17 @@ obj/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
+# IDE / локальные файлы
+.idea/
+*.DotSettings.user
+
+# Локальные данные и секреты
+*.db
+*.db-shm
+*.db-wal
+.env
+Warehouse.API/data/
+Warehouse.API/wwwroot/
+*.tar.gz
+Warehouse.API/deploy/backups/
+Warehouse.API/deploy/data/

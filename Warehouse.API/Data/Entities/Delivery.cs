@@ -10,6 +10,6 @@ public class Delivery
     public string DeliveredUser { get; set; } = string.Empty;
     public string ReceivedUser { get; set; } = string.Empty;
     public string ReceivedUserDepartment { get; set; } = string.Empty;
-    public string PaperFormat { get; set; } = string.Empty;
-    public int Quantity { get; set; }
+    public int DeliveryItemId { get; set; }
+    public DeliveryItem? DeliveryItem { get; set; }
 }

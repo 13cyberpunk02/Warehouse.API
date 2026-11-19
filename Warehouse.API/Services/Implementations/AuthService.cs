@@ -109,8 +109,7 @@ public class AuthService(
         {
             UserName = request.Username,
             Firstname = request.Firstname,
-            Lastname = request.Lastname,
-            DepartmentId = request.DepartmentId
+            Lastname = request.Lastname
         };
         
         var result = await userManager.CreateAsync(newUser, request.Password);

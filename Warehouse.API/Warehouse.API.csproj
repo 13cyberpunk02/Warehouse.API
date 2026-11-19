@@ -8,33 +8,22 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="FluentValidation" Version="11.11.0" />
-        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.3" />
-        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.3" />
-        <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="9.0.3" />
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.3"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.3" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.3">
+        <PackageReference Include="FluentValidation" Version="12.2.0" />
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.2.0" />
+        <PackageReference Include="itext" Version="9.8.1.1" />
+        <PackageReference Include="itext.bouncy-castle-adapter" Version="9.8.1.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.23" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.23" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.23" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.23" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.23">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Scalar.AspNetCore" Version="2.0.34" />
+        <PackageReference Include="Scalar.AspNetCore" Version="2.21.0" />
     </ItemGroup>
 
     <ItemGroup>
-      <_ContentIncludedByDefault Remove="wwwroot\bg.jpg" />
-      <_ContentIncludedByDefault Remove="wwwroot\cartridge.jpg" />
-      <_ContentIncludedByDefault Remove="wwwroot\favicon.ico" />
-      <_ContentIncludedByDefault Remove="wwwroot\history.jpg" />
-      <_ContentIncludedByDefault Remove="wwwroot\index.html" />
-      <_ContentIncludedByDefault Remove="wwwroot\main-DQ74XH74.js" />
-      <_ContentIncludedByDefault Remove="wwwroot\paper-add.png" />
-      <_ContentIncludedByDefault Remove="wwwroot\paper-delivery.jpg" />
-      <_ContentIncludedByDefault Remove="wwwroot\paper.jpg" />
-      <_ContentIncludedByDefault Remove="wwwroot\pic.png" />
-      <_ContentIncludedByDefault Remove="wwwroot\polyfills-FFHMD2TL.js" />
-      <_ContentIncludedByDefault Remove="wwwroot\print.jpg" />
-      <_ContentIncludedByDefault Remove="wwwroot\styles-R6EDCM7H.css" />
-    </ItemGroup>    
+      <Folder Include="wwwroot\" />
+    </ItemGroup>
 </Project>

@@ -1,0 +1,11 @@
+# Запуск на сервере из готового образа (без исходников).
+services:
+  warehouse:
+    image: warehouse:latest
+    container_name: warehouse_app
+    env_file: .env
+    volumes:
+      - ./data:/app/data    # app.db — бэкапить эту папку
+    ports:
+      - "8080:7485"
+    restart: unless-stopped

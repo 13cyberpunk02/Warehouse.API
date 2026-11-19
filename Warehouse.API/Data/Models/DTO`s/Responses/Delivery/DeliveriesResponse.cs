@@ -6,5 +6,5 @@ public record DeliveriesResponse(
     string DeliveredBy,
     string ReceivedDepartment, 
     string ReceivedUser,
-    string PaperFormat,
+    string ItemName,
     int Quantity);

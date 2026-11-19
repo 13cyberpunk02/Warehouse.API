@@ -16,6 +16,4 @@ public static class AccountErrors
         new(ErrorTypeConstant.BadRequest, "Указан не верный пароль(имеющийся)");
     public static ErrorResponse RoleNotFound => 
         new(ErrorTypeConstant.BadRequest, "Роль не найден");
-    public static ErrorResponse UserAlreadyHasProvidedRole => 
-        new(ErrorTypeConstant.BadRequest, "Пользователь уже находится в данной роли");
 }

@@ -17,9 +17,7 @@ public class PaperService(
     private readonly DataContext _context = context;
     public async Task<Result> GetAllPapers()
     {
-        var papers = await _context.Papers.ToListAsync();
-        if (papers.Count == 0)
-            return Result.Failure(PaperErrors.PapersNotFound);
+        var papers = await _context.Papers.ToListAsync();
         return Result.Success(papers);
     }
 

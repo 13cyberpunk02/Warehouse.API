@@ -15,6 +15,6 @@ public class UpdateDepartmentRequestValidator : AbstractValidator<UpdateDepartme
             .NotEmpty().WithMessage("Наименование отдела не может быть пустым")
             .NotNull().WithMessage("Наименование отдела не может быть пустым")
             .MinimumLength(2).WithMessage("Наименование отдела должно содержать хотя бы 2 буквы")
-            .MaximumLength(30).WithMessage("Наименование отдела может содержать до 30 букв");
+            .MaximumLength(100).WithMessage("Наименование отдела может содержать до 100 символов");
     }
 }

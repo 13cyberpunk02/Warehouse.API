@@ -11,7 +11,8 @@ public static class AuthenticationEndpoint
     {
         var group = endpoints.MapGroup("api/identity");
         group.MapPost("/login", Authenticate);
-        group.MapPost("/registration", Registration);
+        // Регистрировать пользователей (и назначать роли) может только администратор
+        group.MapPost("/registration", Registration).RequireAuthorization("Admin");
         group.MapPost("/refresh-token", RefreshToken);
         return group;
     }

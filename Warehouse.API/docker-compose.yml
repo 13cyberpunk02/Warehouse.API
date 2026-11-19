@@ -1,0 +1,14 @@
+services:
+  warehouse:
+    build:
+      # Нужны обе папки: Warehouse.API и Warehouse.WebUI
+      context: ../..
+      dockerfile: Warehouse.API/Warehouse.API/Dockerfile
+    image: warehouse:latest
+    container_name: warehouse_app
+    env_file: .env          # секреты: см. .env.example
+    volumes:
+      - ./data:/app/data    # здесь лежит app.db — бэкапить эту папку
+    ports:
+      - "8080:7485"
+    restart: unless-stopped

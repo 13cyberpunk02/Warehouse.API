@@ -27,8 +27,9 @@ public class JwtService(IOptions<JwtConfiguration> jwtConfiguration, UserManager
             new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName!),
             new Claim(JwtRegisteredClaimNames.Name, user.Firstname),
             new Claim(JwtRegisteredClaimNames.FamilyName, user.Lastname),
-            new Claim(ClaimTypes.Role, string.Join(',', roles)),
         ];
+        // Отдельный claim на каждую роль: строка "Admin,Paper" ломала RequireRole
+        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
         
         var token = new JwtSecurityToken(
             issuer: _jwtConfiguration.Issuer,

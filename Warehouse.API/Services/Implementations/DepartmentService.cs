@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Warehouse.API.Data;
 using Warehouse.API.Data.Entities;
 using Warehouse.API.Data.Models.DTO_s.Requests.Department;
-using Warehouse.API.Data.Models.DTO_s.Responses.Account;
+using Warehouse.API.Data.Models.DTO_s.Responses.DeliveryUser;
 using Warehouse.API.Data.Models.DTO_s.Responses.Department;
 using Warehouse.API.Data.Models.Error.ErrorTypes;
 using Warehouse.API.Data.Models.Error.ErrorTypes.DepartmentErrors;
@@ -20,31 +20,29 @@ public class DepartmentService(DataContext context, UserManager<AppUser> userMan
     public async Task<Result> GetAllDepartments()
     {
         var departments = await context.Departments
+            .Include(u => u.DeliveryUsers)
             .Select(d => new GetAllDepartmentsResponse(
                     d.Id,
                     d.Name,
-                    d.Employees.Select(e => new UsersResponse(
-                        e.Id,
-                        e.UserName,
-                        e.Fullname,
-                        e.Firstname,
-                        e.Lastname,
-                        e.DepartmentId,
-                        e.Department.Name,
-                        userManager.GetRolesAsync(e).GetAwaiter().GetResult().FirstOrDefault()
+                    d.DeliveryUsers
+                        .Select(e => new DeliveryUserResponse(
+                            e.Id,
+                            e.Fullname,
+                            e.Firstname,
+                            e.Lastname,
+                            e.Patronymic,
+                            e.DepartmentId,
+                            e.Department.Name
                     )).ToList()
                 )
-            ).ToListAsync();
-            
-        if (!departments.Any())
-            return Result.Failure(DepartmentErrors.DepartmentsIsEmpty);
+            ).ToListAsync();
         return Result.Success(departments);
     }
 
     public async Task<Result> GetDepartmentById(int departmentId)
     {
         var department = await context.Departments
-            .Include(department => department.Employees)
+            .Include(department => department.DeliveryUsers)
             .FirstOrDefaultAsync(x => x.Id == departmentId);
         
         if(department is null) 
@@ -53,16 +51,16 @@ public class DepartmentService(DataContext context, UserManager<AppUser> userMan
         return Result.Success(new GetAllDepartmentsResponse(
             Id: department.Id,
             Name: department.Name,
-            Employees: department.Employees.Select(e => new UsersResponse(
-                e.Id,
-                e.UserName,
-                e.Fullname,
-                e.Firstname,
-                e.Lastname,
-                e.DepartmentId,
-                e.Department.Name,
-                userManager.GetRolesAsync(e).GetAwaiter().GetResult().FirstOrDefault()
-                )).ToList()
+            Employees: department.DeliveryUsers.Select(e => new DeliveryUserResponse(
+                Id: e.Id,
+                Fullname: e.Fullname,
+                Firstname: e.Firstname,
+                Lastname: e.Lastname,
+                Patronymic: e.Patronymic,
+                DepartmentId: e.DepartmentId,
+                Department: e.Department.Name
+                ))
+                .ToList()
         ));
     }
 
@@ -72,7 +70,7 @@ public class DepartmentService(DataContext context, UserManager<AppUser> userMan
             return Result.Failure(DepartmentErrors.DepartmentsAddNameError);
         
         var department = await context.Departments
-            .Include(department => department.Employees)
+            .Include(department => department.DeliveryUsers)
             .FirstOrDefaultAsync(x => x.Name == name);
         
         if(department is null) 
@@ -81,16 +79,16 @@ public class DepartmentService(DataContext context, UserManager<AppUser> userMan
         return Result.Success(new GetAllDepartmentsResponse(
             Id: department.Id,
             Name: department.Name,
-            Employees: department.Employees.Select(user => new UsersResponse(
-                user.Id,
-                user.UserName,
-                user.Fullname,
-                user.Firstname,
-                user.Lastname,
-                user.DepartmentId,
-                user.Department.Name,
-                userManager.GetRolesAsync(user).GetAwaiter().GetResult().FirstOrDefault()
-            )).ToList()
+            Employees: department.DeliveryUsers.Select(e => new DeliveryUserResponse(
+                    Id: e.Id,
+                    Fullname: e.Fullname,
+                    Firstname: e.Firstname,
+                    Lastname: e.Lastname,
+                    Patronymic: e.Patronymic,
+                    DepartmentId: e.DepartmentId,
+                    Department: e.Department.Name
+                ))
+                .ToList()
         ));
     }
 
