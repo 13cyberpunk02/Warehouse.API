@@ -182,6 +182,21 @@ namespace Warehouse.API.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("PrinterCartridges", b =>
+                {
+                    b.Property<int>("CartridgesId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("PrintersId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("CartridgesId", "PrintersId");
+
+                    b.HasIndex("PrintersId");
+
+                    b.ToTable("PrinterCartridges");
+                });
+
             modelBuilder.Entity("Warehouse.API.Data.Entities.AppUser", b =>
                 {
                     b.Property<string>("Id")
@@ -688,6 +703,28 @@ namespace Warehouse.API.Migrations
                     b.ToTable("Papers");
                 });
 
+            modelBuilder.Entity("Warehouse.API.Data.Entities.Printer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Model")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Note")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Model")
+                        .IsUnique();
+
+                    b.ToTable("Printers");
+                });
+
             modelBuilder.Entity("Warehouse.API.Data.Entities.ProcessedFile", b =>
                 {
                     b.Property<int>("Id")
@@ -802,6 +839,21 @@ namespace Warehouse.API.Migrations
                     b.HasOne("Warehouse.API.Data.Entities.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PrinterCartridges", b =>
+                {
+                    b.HasOne("Warehouse.API.Data.Entities.Cartridge", null)
+                        .WithMany()
+                        .HasForeignKey("CartridgesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Warehouse.API.Data.Entities.Printer", null)
+                        .WithMany()
+                        .HasForeignKey("PrintersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

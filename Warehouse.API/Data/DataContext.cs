@@ -10,6 +10,7 @@ public class DataContext(DbContextOptions<DataContext> options) : IdentityDbCont
    
     public DbSet<Paper> Papers { get; set; }
     public DbSet<Cartridge> Cartridges { get; set; }
+    public DbSet<Printer> Printers { get; set; }
     public DbSet<Delivery> Deliveries { get; set; }
     public DbSet<DeliveryUser> DeliveryUsers { get; set; }
     public DbSet<DeliveryItem> DeliveryItems { get; set; }
@@ -26,6 +27,13 @@ public class DataContext(DbContextOptions<DataContext> options) : IdentityDbCont
             .WithMany(d => d.DeliveryUsers)
             .OnDelete(DeleteBehavior.SetNull);
         
+        // Принтер ↔ картридж: многие ко многим, связи удаляются вместе с принтером или картриджем
+        modelBuilder.Entity<Printer>(entity =>
+        {
+            entity.HasIndex(p => p.Model).IsUnique();
+            entity.HasMany(p => p.Cartridges).WithMany(c => c.Printers).UsingEntity("PrinterCartridges");
+        });
+
         modelBuilder.Entity<ShortUrl>(entity =>
         {
             entity.HasIndex(e => e.ShortCode).IsUnique();

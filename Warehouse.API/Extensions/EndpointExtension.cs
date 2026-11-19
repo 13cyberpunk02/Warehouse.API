@@ -12,6 +12,7 @@ public static class EndpointExtension
         endpoints.MapDepartmentEndpoints();
         endpoints.MapDeliveryEndpoints();
         endpoints.MapCartridgeEndpoints();
+        endpoints.MapPrinterEndpoints();
         endpoints.MapPdfToolsEndpoints();
         return endpoints;
     }

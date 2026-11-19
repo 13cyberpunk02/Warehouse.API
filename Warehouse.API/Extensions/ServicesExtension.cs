@@ -24,6 +24,7 @@ public static class ServicesExtension
         services.AddScoped<IDeliveryUserService, DeliveryUserService>();
         services.AddScoped<IPaperService, PaperService>();
         services.AddScoped<ICartridgeService, CartridgeService>();
+        services.AddScoped<IPrinterService, PrinterService>();
         services.AddScoped<IDepartmentService, DepartmentService>();
         services.AddScoped<IDeliveryService, DeliveryService>();
         services.AddScoped<IUserRoleService, UserRoleService>();

@@ -8,7 +8,7 @@ services:
     container_name: warehouse_app
     env_file: .env          # секреты: см. .env.example
     volumes:
-      - ./data:/app/data    # здесь лежит app.db — бэкапить эту папку
+      - ./db-data:/app/data   # здесь лежит app.db (не ./data: на Windows это та же папка, что исходники Data/)
     ports:
       - "8080:7485"
     restart: unless-stopped

@@ -12,7 +12,7 @@
 **/*.db-shm
 **/*.db-wal
 **/.env
-Warehouse.API/Warehouse.API/data
+Warehouse.API/Warehouse.API/db-data
 Warehouse.API/Warehouse.API/deploy
 **/wwwroot/files
 **/*.DotSettings.user

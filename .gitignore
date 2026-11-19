@@ -12,7 +12,7 @@ riderModule.iml
 *.db-shm
 *.db-wal
 .env
-Warehouse.API/data/
+Warehouse.API/db-data/
 Warehouse.API/wwwroot/
 *.tar.gz
 Warehouse.API/deploy/backups/
